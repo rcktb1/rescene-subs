@@ -1,0 +1,40 @@
+name: Daily Subs Map Update
+
+on:
+  schedule:
+    # Runs every day at 15:00 UTC (Midnight KST)
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yt-dlp
+        run: pip install -U yt-dlp
+
+      - name: Scan Pandanim channel
+        run: python build_map.py
+
+      - name: Commit and push updated subs.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add subs.json
+          if git diff --staged --quiet; then
+            echo "No new videos found."
+          else
+            git commit -m "Auto-update subs.json"
+            git push
+          fi
