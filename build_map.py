@@ -20,10 +20,10 @@ if os.path.exists("subs.json"):
         sub_map = json.load(f)
 
 initial_count = len(sub_map)
-print(f"Loaded {initial_count} existing entries from subs.json.")
+print(f"Loaded {initial_count} existing entries from subs.json.", flush=True)
 
 for url in CHANNEL_URLS:
-    print(f"\nScanning {url}...")
+    print(f"\nScanning {url}...", flush=True)
     cmd = [
         "yt-dlp",
         "--dump-json",
@@ -42,19 +42,19 @@ for url in CHANNEL_URLS:
             data = json.loads(line)
             tab_scanned += 1
             pandanim_id = data.get("id")
-            description = data.get("description") or ""
+            description = str(data.get("description") or "")
 
             for orig_id in YT_REGEX.findall(description):
                 if orig_id != pandanim_id and orig_id not in sub_map:
                     sub_map[orig_id] = pandanim_id
-                    print(f"  [New] {orig_id} -> {pandanim_id}")
+                    print(f"  [New] {orig_id} -> {pandanim_id}", flush=True)
         except json.JSONDecodeError:
             continue
 
     proc.wait()
-    print(f"Finished tab ({tab_scanned} items checked).")
+    print(f"Finished tab ({tab_scanned} items checked).", flush=True)
 
 with open("subs.json", "w", encoding="utf-8") as f:
     json.dump(sub_map, f, indent=2)
 
-print(f"\nDone! Total mapped videos: {len(sub_map)} (+{len(sub_map) - initial_count} new).")
+print(f"\nDone! Total mapped videos: {len(sub_map)} (+{len(sub_map) - initial_count} new).", flush=True)
