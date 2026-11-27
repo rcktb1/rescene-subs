@@ -42,7 +42,7 @@ for url in CHANNEL_URLS:
             data = json.loads(line)
             tab_scanned += 1
             pandanim_id = data.get("id")
-            description = data.get("description", "")
+            description = data.get("description") or ""
 
             for orig_id in YT_REGEX.findall(description):
                 if orig_id != pandanim_id and orig_id not in sub_map:
